@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estatística PRO - Completo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root { --neon: #39ff14; --bg: #0d0d0d; --card: #1a1a1a; --blue: #00d4ff; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: #fff; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 500px; background: var(--card); padding: 20px; border-radius: 15px; border: 1px solid var(--neon); box-shadow: 0 0 15px rgba(57, 255, 20, 0.2); }
+        h2 { text-align: center; color: var(--neon); text-transform: uppercase; margin-bottom: 20px; font-size: 1.4em; }
+        .input-row { display: grid; grid-template-columns: 1fr 2fr 1fr 2fr; gap: 8px; margin-bottom: 10px; align-items: center; }
+        input { background: #222; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 5px; text-align: center; font-size: 0.9em; }
+        .btns { display: flex; gap: 10px; margin: 20px 0; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .btn-calc { background: var(--neon); color: #000; }
+        .btn-clear { background: transparent; color: #ff4444; border: 1px solid #ff4444; }
+        .section { background: #000; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 3px solid var(--neon); }
+        h3 { color: var(--neon); font-size: 1.1em; margin-top: 0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.8em; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: center; }
+        th { background: #111; color: var(--neon); }
+        .formula { font-family: 'Courier New', monospace; color: var(--blue); font-size: 0.85em; margin: 10px 0 5px 0; display: block; border-bottom: 1px dashed #333; padding-bottom: 3px; }
+        .res-destaque { color: var(--neon); font-weight: bold; }
+        .chart-container { height: 250px; margin-top: 20px; }
+        .footer { margin-top: 30px; text-align: center; border-top: 1px solid #333; padding-top: 20px; width: 100%; padding-bottom: 40px; }
+        .links a { color: var(--neon); text-decoration: none; border: 1px solid var(--neon); padding: 5px 12px; border-radius: 20px; font-size: 0.75em; margin: 5px; display: inline-block; transition: 0.3s; }
+        .links a:hover { background: var(--neon); color: #000; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Estatística Descritiva PRO</h2>
+    <div id="inputs"></div>
+
+    <div class="btns">
+        <button class="btn-calc" onclick="calcular()">Calcular Tudo</button>
+        <button class="btn-clear" onclick="location.reload()">Limpar</button>
+    </div>
+
+    <div id="resultados" style="display:none;">
+        <div class="section">
+            <h3>1. Tabela de Distribuição</h3>
+            <table id="tab-frequencia">
+                <thead><tr><th>xi</th><th>fi</th><th>Fi</th><th>xi · fi</th></tr></thead>
+                <tbody id="corpo-tab"></tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h3>2. Memorial de Cálculo</h3>
+            
+            <span class="formula">Média (X̄) = Σ(xi·fi) / N</span>
+            <div id="calc-media"></div>
+
+            <span class="formula">Moda (Mo) = Maior fi</span>
+            <div id="calc-moda"></div>
+
+            <span class="formula">Mediana (Md) = xi onde Fi ≥ N/2</span>
+            <div id="calc-mediana"></div>
+            
+            <span class="formula">Variância Amostral (s²) = Σfi·(xi - X̄)² / (N - 1)</span>
+            <div id="calc-var"></div>
+
+            <span class="formula">Desvio Padrão (s) = √s²</span>
+            <div id="calc-dp"></div>
+
+            <span class="formula">C.V. (%) = (s / X̄) * 100</span>
+            <div id="calc-cv"></div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="grafico"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="footer">
+    <div class="links">
+        <a href="https://play.google.com/store/apps/details?id=com.diego.hubdeportfolios&pcampaignid=web_share" target="_blank">App Hub</a>
+        <a href="https://www.linkedin.com/in/junior-santos-9b930b211/" target="_blank">LinkedIn</a>
+        <a href="https://junior670.github.io/Portf-lio/" target="_blank">Portfólio</a>
+    </div>
+
+    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 20px;">
+        <p style="color: var(--neon); font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1.5px; font-size: 1.1em;">
+            Junior Santos
+        </p>
+        <p style="font-size: 0.85em; color: #fff; margin: 2px 0; opacity: 0.9;">
+            Especialista em Matemática Financeira e Estatística
+        </p>
+        <p style="font-size: 0.85em; color: #fff; margin: 2px 0; opacity: 0.9;">
+            Especialista em Segurança da Informação
+        </p>
+        <p style="font-size: 0.8em; color: #aaa; margin-top: 5px;">
+            Gestão da TI | Fatec Jundiaí
+        </p>
+        <p style="font-size: 0.75em; color: #666; margin-top: 12px; letter-spacing: 1px;">
+            © 2024 Todos os direitos reservados.
+        </p>
+    </div>
+</div>
+
+<script>
+    let meuGrafico;
+    const divIn = document.getElementById('inputs');
+    for(let i=1; i<=10; i++) {
+        divIn.innerHTML += `
+            <div class="input-row">
+                <label>xi${i}</label><input type="number" id="xi${i}" value="0">
+                <label>fi${i}</label><input type="number" id="fi${i}" value="0">
+            </div>`;
+    }
+
+    function calcular() {
+        let dados = [];
+        let N = 0, somaXiFi = 0;
+
+        for(let i=1; i<=10; i++) {
+            let x = parseFloat(document.getElementById(`xi${i}`).value) || 0;
+            let f = parseFloat(document.getElementById(`fi${i}`).value) || 0;
+            if(f > 0) { 
+                dados.push({x, f}); 
+                N += f; 
+                somaXiFi += (x*f); 
+            }
+        }
+
+        if(N <= 1) return alert("N deve ser maior que 1 para cálculos de variância.");
+
+        const media = somaXiFi / N;
+        dados.sort((a, b) => a.x - b.x); // Ordenar por xi para mediana
+
+        let htmlTab = "", fAcum = 0, somaVar = 0, maiorFi = -1, moda = 0;
+        let mediana = 0;
+        const posicaoMediana = N / 2;
+
+        // Loop para cálculos
+        dados.forEach(d => {
+            fAcum += d.f;
+            somaVar += Math.pow(d.x - media, 2) * d.f;
+            
+            // Lógica da Moda
+            if(d.f > maiorFi) { maiorFi = d.f; moda = d.x; }
+
+            // Lógica da Mediana (Primeiro xi onde Fi >= N/2)
+            if(mediana === 0 && fAcum >= posicaoMediana) { mediana = d.x; }
+
+            htmlTab += `<tr><td>${d.x}</td><td>${d.f}</td><td>${fAcum}</td><td>${(d.x*d.f).toFixed(2)}</td></tr>`;
+        });
+
+        const variancia = somaVar / (N - 1);
+        const dp = Math.sqrt(variancia);
+        const cv = (dp / media) * 100;
+
+        // Exibir Resultados
+        document.getElementById('resultados').style.display = "block";
+        document.getElementById('corpo-tab').innerHTML = htmlTab;
+        
+        document.getElementById('calc-media').innerHTML = `X̄ = ${somaXiFi.toFixed(2)} / ${N} = <span class="res-destaque">${media.toFixed(4)}</span>`;
+        
+        document.getElementById('calc-moda').innerHTML = `Maior freq. foi ${maiorFi}, logo Mo = <span class="res-destaque">${moda}</span>`;
+        
+        document.getElementById('calc-mediana').innerHTML = `N/2 = ${posicaoMediana.toFixed(1)}. Primeiro Fi ≥ ${posicaoMediana.toFixed(1)} é o xi: <span class="res-destaque">${mediana}</span>`;
+
+        document.getElementById('calc-var').innerHTML = `s² = ${somaVar.toFixed(2)} / (${N} - 1) = <span class="res-destaque">${variancia.toFixed(4)}</span>`;
+        
+        document.getElementById('calc-dp').innerHTML = `s = √${variancia.toFixed(4)} = <span class="res-destaque">${dp.toFixed(4)}</span>`;
+
+        document.getElementById('calc-cv').innerHTML = `CV = (${dp.toFixed(4)} / ${media.toFixed(4)}) * 100 = <span class="res-destaque">${cv.toFixed(2)}%</span>`;
+
+        gerarGrafico(dados.map(d => d.x), dados.map(d => d.f));
+    }
+
+    function gerarGrafico(labels, data) {
+        if(meuGrafico) meuGrafico.destroy();
+        meuGrafico = new Chart(document.getElementById('grafico'), {
+            type: 'bar',
+            data: { 
+                labels: labels, 
+                datasets: [{ 
+                    label: 'Frequência (fi)', 
+                    data: data, 
+                    backgroundColor: '#39ff1488', 
+                    borderColor: '#39ff14', 
+                    borderWidth: 2 
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false,
+                scales: { 
+                    y: { beginAtZero: true, grid: { color: '#333' } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { labels: { color: '#fff' } } }
+            }
+        });
+    }
+</script>
+</body>
+</html>
